@@ -1,8 +1,14 @@
 # Quadruped Robot
 
+A side project I built for fun over the summer, with a bit of a Watch Dogs vibe. I plan to keep at it once I find the time (and a 3D printer).
+
 A 12-servo, 3D-printable quadruped. It was designed in Fusion 360, exported to URDF, and simulated in MuJoCo. In the sim it stands, trots forward and backward, and turns on the spot. The same controller drives the real servos through a PCA9685 board.
 
-![CAD](cad/quadruped-v2-may-2026.png)
+More of my projects: [danielzhang122.github.io/website](https://danielzhang122.github.io/website/)
+
+[![Quadruped in the MuJoCo sim](media/quadruped-sim.gif)](media/quadruped-sim.mp4)
+
+*In the MuJoCo sim. Click for the full video.*
 
 ## To do
 
@@ -15,6 +21,11 @@ A 12-servo, 3D-printable quadruped. It was designed in Fusion 360, exported to U
 - [ ] First power-up: check servo directions (`SERVO_INVERT`) and calibrate
 - [ ] Walk on the real robot and tune the gait
 
+### Future (TBD)
+
+- [ ] Computer vision (CV)
+- [ ] GUI front end for controlling the robot
+
 ## What's here
 
 | Folder | What | Status |
@@ -25,8 +36,11 @@ A 12-servo, 3D-printable quadruped. It was designed in Fusion 360, exported to U
 | `cad/` | Fusion 360 designs, see below | Open in Fusion 360 |
 | `experimental/` | RL training, URDF-to-MuJoCo conversion scripts, pose tools, Isaac Sim USD files | **Didn't work / untested**, see [its README](experimental/README.md) |
 | `tests/` | Gait unit tests, hardware mapping tests (fake servo board), headless sim tests (stands, walks, turns) | Pass |
+| `media/` | Sim video (`quadruped-sim.mp4`) and the GIF shown above | |
 
 ### CAD files
+
+![CAD](cad/quadruped-v2-may-2026.png)
 
 | File | What |
 |---|---|

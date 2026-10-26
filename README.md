@@ -1,14 +1,25 @@
 # Quadruped Robot
 
-A 12-servo, 3D-printed quadruped. It was designed in Fusion 360, exported to URDF, and simulated in MuJoCo. A trot gait controller drives it in the sim, or on the real robot through a PCA9685 servo board.
+A 12-servo, 3D-printable quadruped. It was designed in Fusion 360, exported to URDF, and simulated in MuJoCo. In the sim it stands, trots forward and backward, and turns on the spot. The same controller drives the real servos through a PCA9685 board.
 
 ![CAD](cad/quadruped-v2-may-2026.png)
+
+## To do
+
+- [x] Design the robot in Fusion 360 (v2, with electronics)
+- [x] Export the URDF and build the MuJoCo model
+- [x] Trot gait controller: stands, walks and turns in the sim
+- [ ] Re-export the URDF and sim model from the v2 design
+- [ ] 3D-print the parts
+- [ ] Assemble: 12 servos, PCA9685 board, Raspberry Pi, power
+- [ ] First power-up: check servo directions (`SERVO_INVERT`) and calibrate
+- [ ] Walk on the real robot and tune the gait
 
 ## What's here
 
 | Folder | What | Status |
 |---|---|---|
-| `controller/ik_controller.py` | Trot gait controller (keyboard driven) | Works in sim. Hardware mode is untested |
+| `controller/ik_controller.py` | Trot gait controller (keyboard driven) | Walks in sim. Hardware mode is ready for the first build |
 | `mujoco/robot.xml` | MuJoCo model with position actuators | Works |
 | `description/` | ROS 2 package `quadruped_description`: URDF (`urdf/quadruped.urdf.xacro`) + STL meshes, originally exported by [fusion2urdf-ros2](https://github.com/dheena2k2/fusion2urdf-ros2) | Source of the model |
 | `cad/` | Fusion 360 designs, see below | Open in Fusion 360 |
@@ -69,7 +80,7 @@ Speed and turning are fractions of a full stride, from -1 to 1.
 
 - All angles are in the URDF/MuJoCo joint frame, and joint limits are read from `mujoco/robot.xml`, so the sim and the servo mapping can't disagree.
 - The gait settings are grouped at the top of the file (`GAIT_FREQ`, `SWING_HIP`, `STEP_HEIGHT`, ...). The current values were tuned in the sim: about 0.11 m/s walking and about 30°/s turning, with no tip-overs in the test scenarios.
-- **Before running on hardware:** check each servo's direction and flip it in `SERVO_INVERT` if needed. Each joint's range is mapped linearly onto the servo's 0–180°.
+- **First power-up on hardware:** check each servo's direction and flip it in `SERVO_INVERT` if needed. Each joint's range is mapped linearly onto the servo's 0–180°.
 - On hardware, a servo is only re-sent when its angle changes by at least `SERVO_DEADBAND` (0.1°). Every servo write is a separate I2C message to the PCA9685, so this saves the most time. When the robot stands still, nothing is sent at all.
 
 ### Changes from the earlier version

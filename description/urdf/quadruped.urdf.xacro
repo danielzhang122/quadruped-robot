@@ -1,0 +1,402 @@
+<?xml version="1.0" ?>
+<robot name="quadruped" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find quadruped_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find quadruped_description)/urdf/quadruped.trans" />
+<link name="base_link">
+  <inertial>
+    <origin xyz="0.00163269153982156 -0.00182706423624738 -0.0400476186324271" rpy="0 0 0"/>
+    <mass value="0.163845397110169"/>
+    <inertia ixx="0.000213402020969405" iyy="0.000302434046961449" izz="0.000513114747208674" ixy="-1.201248361510656e-16" iyz="-4.96152710143796e-10" ixz="3.933621007048971e-18"/>
+  </inertial>
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="fr_hip">
+  <inertial>
+    <origin xyz="-0.006684922476042292 -0.02768076586198904 0.011946122181396599" rpy="0 0 0"/>
+    <mass value="0.0441842954273049"/>
+    <inertia ixx="2.88752105093281e-05" iyy="1.98454194982597e-05" izz="1.7068851480669e-05" ixy="-3.26156570682335e-06" iyz="9.43270807229662e-07" ixz="2.322956451452e-07"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.065762 0.05514 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fr_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.065762 0.05514 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fr_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="fr_mid">
+  <inertial>
+    <origin xyz="0.024304344772111887 -0.03706526562805769 -3.759700298103241e-07" rpy="0 0 0"/>
+    <mass value="0.0356783410342055"/>
+    <inertia ixx="2.728231834984e-05" iyy="2.18994493548319e-05" izz="4.69872353001636e-05" ixy="-1.049260992761619e-12" iyz="-1.552309442012095e-13" ixz="2.183775350220879e-13"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.035762 0.096481 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fr_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.035762 0.096481 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fr_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="fr_end">
+  <inertial>
+    <origin xyz="0.024862132061746436 0.0011902105874371793 -0.018006904132433724" rpy="0 0 0"/>
+    <mass value="0.0299344035282369"/>
+    <inertia ixx="2.21448121741883e-05" iyy="2.26143404728166e-05" izz="4.64804114255887e-06" ixy="2.65916666229303e-07" iyz="-1.3797819782097e-06" ixz="3.44128407687838e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.033762 0.170612 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fr_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.033762 0.170612 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fr_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="br_hip">
+  <inertial>
+    <origin xyz="0.0066842790868109 -0.027680768544805327 0.01194612303749059" rpy="0 0 0"/>
+    <mass value="0.0441843988105653"/>
+    <inertia ixx="2.88752420285983e-05" iyy="1.98454377415394e-05" izz="1.70688764859079e-05" ixy="3.26158171270284e-06" iyz="9.43253148853897e-07" ixz="-2.32252787079728e-07"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.062496 0.05514 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/br_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0.062496 0.05514 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/br_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="br_mid">
+  <inertial>
+    <origin xyz="-0.024304961674508505 -0.03706526545515594 -3.7542838836335246e-07" rpy="0 0 0"/>
+    <mass value="0.0356783428325288"/>
+    <inertia ixx="2.72823189324833e-05" iyy="2.18994500731729e-05" izz="4.69872365275284e-05" ixy="1.239602550381219e-12" iyz="1.859741473233395e-13" ixz="2.841820474688145e-13"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.032496 0.096481 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/br_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0.032496 0.096481 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/br_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="br_end">
+  <inertial>
+    <origin xyz="-0.024862748982052024 0.0011902105873204671 -0.018006904132492566" rpy="0 0 0"/>
+    <mass value="0.0299344035279718"/>
+    <inertia ixx="2.21448121741301e-05" iyy="2.26143404728e-05" izz="4.6480411425077e-06" ixy="-2.65916666243615e-07" iyz="-1.37978197818633e-06" ixz="-3.44128407688441e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.030496 0.170612 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/br_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0.030496 0.170612 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/br_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="fl_hip">
+  <inertial>
+    <origin xyz="-0.006684896007154356 0.027679998216628247 0.01194612303748923" rpy="0 0 0"/>
+    <mass value="0.0441843988105653"/>
+    <inertia ixx="2.88752420285979e-05" iyy="1.98454377415393e-05" izz="1.70688764859077e-05" ixy="3.26158171270289e-06" iyz="-9.43253148853613e-07" ixz="2.32252787080799e-07"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.065762 -0.051742 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fl_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.065762 -0.051742 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fl_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="fl_mid">
+  <inertial>
+    <origin xyz="0.024304344754165617 0.03706549512697854 -3.754283903166511e-07" rpy="0 0 0"/>
+    <mass value="0.0356783428325288"/>
+    <inertia ixx="2.72823189324821e-05" iyy="2.18994500731717e-05" izz="4.69872365275285e-05" ixy="1.239603743003609e-12" iyz="-1.859737949576334e-13" ixz="-2.841823727294662e-13"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.035762 -0.093082 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fl_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.035762 -0.093082 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fl_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="fl_end">
+  <inertial>
+    <origin xyz="0.02486213206171041 -0.0011899809154980734 -0.01800690413249514" rpy="0 0 0"/>
+    <mass value="0.0299344035279718"/>
+    <inertia ixx="2.21448121741299e-05" iyy="2.26143404727999e-05" izz="4.64804114250835e-06" ixy="-2.65916666243615e-07" iyz="1.37978197818625e-06" ixz="3.4412840768857e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.033762 -0.167213 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fl_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.033762 -0.167213 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/fl_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="bl_hip">
+  <inertial>
+    <origin xyz="0.0066843055556989606 0.027679995533813263 0.011946122181395926" rpy="0 0 0"/>
+    <mass value="0.0441842954273049"/>
+    <inertia ixx="2.88752105093284e-05" iyy="1.98454194982597e-05" izz="1.70688514806691e-05" ixy="-3.26156570682338e-06" iyz="-9.43270807229974e-07" ixz="-2.32295645144034e-07"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.062496 -0.051742 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/bl_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0.062496 -0.051742 0.038083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/bl_hip.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="bl_mid">
+  <inertial>
+    <origin xyz="-0.0243049616924549 0.037065495299881235 -3.7597003122238903e-07" rpy="0 0 0"/>
+    <mass value="0.0356783410342055"/>
+    <inertia ixx="2.72823183498413e-05" iyy="2.18994493548331e-05" izz="4.69872353001631e-05" ixy="-1.049259854349338e-12" iyz="1.552315134073501e-13" ixz="-2.183779280453754e-13"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.032496 -0.093082 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/bl_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0.032496 -0.093082 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/bl_mid.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="bl_end">
+  <inertial>
+    <origin xyz="-0.024862748982088245 -0.0011899809156137864 -0.01800690413243548" rpy="0 0 0"/>
+    <mass value="0.0299344035282369"/>
+    <inertia ixx="2.21448121741886e-05" iyy="2.26143404728166e-05" izz="4.64804114255844e-06" ixy="2.65916666229249e-07" iyz="1.37978197820959e-06" ixz="-3.44128407687709e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.030496 -0.167213 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/bl_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="0.030496 -0.167213 0.030533" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/bl_end.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="base_upper">
+  <inertial>
+    <origin xyz="-3.090257922487485e-07 -0.00013773495515434606 0.01749907816124257" rpy="0 0 0"/>
+    <mass value="0.076748693848984"/>
+    <inertia ixx="9.35094400270094e-05" iyy="0.00013240874772986" izz="0.000225600158100052" ixy="-2.160999124436590e-12" iyz="-2.08548873514437e-09" ixz="-1.171211277240609e-13"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.001633 0.001825 0.035083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/base_upper.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="abs_white"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.001633 0.001825 0.035083" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://quadruped_description/meshes/base_upper.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="frontRightHip" type="revolute">
+  <origin xyz="0.065762 -0.05514 -0.038083" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="fr_hip"/>
+  <axis xyz="-0.0 -0.0 -1.0"/>
+  <limit upper="0.785398" lower="-2.356194" effort="100" velocity="100"/>
+</joint>
+
+<joint name="frontRightMid" type="revolute">
+  <origin xyz="-0.03 -0.041341 0.00755" rpy="0 0 0"/>
+  <parent link="fr_hip"/>
+  <child link="fr_mid"/>
+  <axis xyz="-1.0 0.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="frontRightEnd" type="revolute">
+  <origin xyz="-0.002 -0.074131 0.0" rpy="0 0 0"/>
+  <parent link="fr_mid"/>
+  <child link="fr_end"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit upper="0.0" lower="-3.141593" effort="100" velocity="100"/>
+</joint>
+
+<joint name="backRightHip" type="revolute">
+  <origin xyz="-0.062496 -0.05514 -0.038083" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="br_hip"/>
+  <axis xyz="-0.0 -0.0 -1.0"/>
+  <limit upper="2.356194" lower="-0.785398" effort="100" velocity="100"/>
+</joint>
+
+<joint name="backRightMid" type="revolute">
+  <origin xyz="0.03 -0.041341 0.00755" rpy="0 0 0"/>
+  <parent link="br_hip"/>
+  <child link="br_mid"/>
+  <axis xyz="1.0 -0.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="backRightEnd" type="revolute">
+  <origin xyz="0.002 -0.074131 0.0" rpy="0 0 0"/>
+  <parent link="br_mid"/>
+  <child link="br_end"/>
+  <axis xyz="-1.0 0.0 -0.0"/>
+  <limit upper="3.141593" lower="0.0" effort="100" velocity="100"/>
+</joint>
+
+<joint name="frontLeftHip" type="revolute">
+  <origin xyz="0.065762 0.051742 -0.038083" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="fl_hip"/>
+  <axis xyz="-0.0 -0.0 -1.0"/>
+  <limit upper="2.356194" lower="-0.785398" effort="100" velocity="100"/>
+</joint>
+
+<joint name="frontLeftMid" type="revolute">
+  <origin xyz="-0.03 0.04134 0.00755" rpy="0 0 0"/>
+  <parent link="fl_hip"/>
+  <child link="fl_mid"/>
+  <axis xyz="-1.0 0.0 -0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="frontLeftEnd" type="revolute">
+  <origin xyz="-0.002 0.074131 0.0" rpy="0 0 0"/>
+  <parent link="fl_mid"/>
+  <child link="fl_end"/>
+  <axis xyz="1.0 -0.0 0.0"/>
+  <limit upper="3.141593" lower="0.0" effort="100" velocity="100"/>
+</joint>
+
+<joint name="backLeftHip" type="revolute">
+  <origin xyz="-0.062496 0.051742 -0.038083" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="bl_hip"/>
+  <axis xyz="-0.0 -0.0 -1.0"/>
+  <limit upper="0.785398" lower="-2.356194" effort="100" velocity="100"/>
+</joint>
+
+<joint name="backLeftMid" type="revolute">
+  <origin xyz="0.03 0.04134 0.00755" rpy="0 0 0"/>
+  <parent link="bl_hip"/>
+  <child link="bl_mid"/>
+  <axis xyz="1.0 -0.0 0.0"/>
+  <limit upper="1.570796" lower="-1.570796" effort="100" velocity="100"/>
+</joint>
+
+<joint name="backLeftEnd" type="revolute">
+  <origin xyz="0.002 0.074131 0.0" rpy="0 0 0"/>
+  <parent link="bl_mid"/>
+  <child link="bl_end"/>
+  <axis xyz="-1.0 -0.0 -0.0"/>
+  <limit upper="0.0" lower="-3.141593" effort="100" velocity="100"/>
+</joint>
+
+<joint name="Rigid 14" type="fixed">
+  <origin xyz="0.001633 -0.001825 -0.035083" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="base_upper"/>
+</joint>
+
+</robot>

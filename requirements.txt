@@ -1,0 +1,7 @@
+# MuJoCo sim + controller
+mujoco
+numpy
+pynput
+
+# On the Raspberry Pi (for --hardware), also:
+# adafruit-circuitpython-servokit

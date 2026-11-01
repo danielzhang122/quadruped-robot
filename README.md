@@ -12,12 +12,12 @@ More of my projects: [danielzhang122.github.io/website](https://danielzhang122.g
 
 ## To do
 
-- [x] Design the robot in Fusion 360 (v2, with electronics)
+- [x] Design the robot in Fusion 360 (v2, with electronics: sized for MG90S servos, a PCA9685 board and a Raspberry Pi Zero 2 W)
 - [x] Export the URDF and build the MuJoCo model
 - [x] Trot gait controller: stands, walks and turns in the sim
 - [ ] Re-export the URDF and sim model from the v2 design
 - [ ] 3D-print the parts
-- [ ] Assemble: 12 servos, PCA9685 board, Raspberry Pi, power
+- [ ] Assemble: 12 MG90S servos, PCA9685 board, Raspberry Pi Zero 2 W, power
 - [ ] First power-up: check servo directions (`SERVO_INVERT`) and calibrate
 - [ ] Walk on the real robot and tune the gait
 

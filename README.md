@@ -4,7 +4,7 @@ A side project I built for fun over the summer, with a bit of a Watch Dogs vibe.
 
 A 12-servo, 3D-printable quadruped. It was designed in Fusion 360, exported to URDF, and simulated in MuJoCo. In the sim it stands, trots forward and backward, and turns on the spot. The same controller has a hardware mode for the real servos (PCA9685 board); it's tested against a fake servo board and waits for the first build.
 
-More of my projects: [danielzhang122.github.io/website](https://danielzhang122.github.io/website/)
+More of my projects: [zhangdz.ca](https://zhangdz.ca)
 
 [![Quadruped in the MuJoCo sim](media/quadruped-sim.gif)](media/quadruped-sim.mp4)
 

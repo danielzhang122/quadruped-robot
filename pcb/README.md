@@ -53,7 +53,7 @@ Pi (I2C wires) → U4 (servo driver) → 12 servo signal pins
 
 | Part | What it does |
 |---|---|
-| **J1** XT30 connector | Where the battery plugs in. Pin 2 is +, pin 1 is −. |
+| **J1** XT30 connector | Where the battery plugs in. Pin 1 is +, pin 2 is −. |
 | **F1** 7.5 A fuse | If anything shorts, the fuse blows instead of the LiPo dumping 50 A+ into the board and catching fire. Normal walking only draws 2–4 A, so 7.5 A won't blow by accident. |
 | **Q1** AO4407A P-MOSFET | An electronic switch. Battery plugged in the right way, it turns fully on and wastes almost no power. Plugged in backwards, it stays off and nothing gets power. A plain diode would also protect, but would waste about 2.5 W as heat at 5 A. Drain (pin 2) faces the battery, source (pin 3) faces VBAT. |
 | **R1** 10 kΩ | Holds Q1's gate at ground. Ground being about 7 V below the battery voltage is exactly what turns a P-MOSFET on. |
@@ -338,7 +338,7 @@ Every part on the board, with the reference name (what KiCad calls it) and what 
 
 | Ref | Part | KiCad symbol | What it does |
 |---|---|---|---|
-| J1 | XT30 male, PCB mount | `Conn_01x02` | Battery plug. Pin 2 = +, pin 1 = −. On the back edge, lead comes up from the battery underneath. |
+| J1 | XT30 male, PCB mount | `Conn_01x02` | Battery plug. Pin 1 = +, pin 2 = −. On the back edge, lead comes up from the battery underneath. |
 | F1 | Mini blade fuse holder + **7.5A** fuse | `Fuse` | Blows if something shorts, so the LiPo doesn't dump 50 A+ into the board. |
 | Q1 | P-MOSFET, −20/−30 V, >10 A, SOIC-8 (e.g. **AO4407A**) | `Q_PMOS_GDS` | Reverse-polarity protection. Battery backwards = MOSFET stays off = nothing gets hurt. Drain toward the battery, source toward the load. |
 | R1 | **10k**, 0805 | `R` | Pulls Q1's gate to GND so it turns on when the battery is the right way round. |

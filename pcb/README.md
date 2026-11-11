@@ -2,7 +2,7 @@
 
 A custom board to replace the rats' nest of wires between the battery, the Pi, the PCA9685 breakout and the 12 servos. Designed in KiCad.
 
-**Status:** planning. Nothing drawn yet. This is the plan and the "what is a PCB" crash course.
+**Status:** schematic in progress (KiCad 10). See the [component list](#component-list) for every part.
 
 ---
 
@@ -105,7 +105,7 @@ So the servo rail should handle **5 A continuous** and survive spikes, with a bi
 
 | Rail | Module (example, check the datasheet) | Notes |
 |---|---|---|
-| Servo 5 V | Pololu **D24V50F5** (5 V, 5 A) or similar | Add a 1000–2200 µF, 16 V low-ESR electrolytic cap on its output, right by the servo headers. |
+| Servo 5 V | Pololu **D24V50F5** (5 V, 5 A) or similar | Add two 1000 µF, 16 V low-ESR electrolytic caps on its output: one by the front servo headers, one by the back. |
 | Pi 5 V | Pololu **D24V22F5** (5 V, 2.5 A) or similar | Feeds the Pi's 5 V pins directly. |
 
 In KiCad you just make a custom footprint for each module (a few header holes at the right spacing, read off the module's datasheet drawing).
@@ -237,28 +237,116 @@ Do this in order, and stop at the first thing that's wrong:
 
 ---
 
-## Rough BOM
+## Component list
 
-| Qty | Part | Notes |
-|---|---|---|
-| 1 | XT30 male, PCB mount | Battery in |
-| 1 | Mini blade fuse holder + 7.5 A fuse | |
-| 1 | P-MOSFET, −20/−30 V, >10 A, SOIC-8 | Reverse polarity |
-| 1 | INA219 + 0.01 Ω 2512 shunt | Battery monitor, address 0x41 |
-| 1 | 5 V / 5 A buck module | Servo rail |
-| 1 | 5 V / 2.5 A buck module | Pi rail |
-| 1 | 1000–2200 µF 16 V low-ESR electrolytic | Servo rail bulk cap |
-| 1 | PCA9685PW (TSSOP-28) | Servo driver |
-| 12 | 220 Ω 0805 | Servo signal series |
-| ~4 | 10 kΩ 0805 | OE pull-up, MOSFET gate, etc |
-| 2 | 4.7 kΩ 0805 (DNP) | Optional I2C pull-ups |
-| ~6 | 100 nF 0805 | Decoupling, one per chip + spares |
-| ~3 | 10 µF 0805 | Bulk near chips |
-| 12 | 1×3 2.54 mm male header | Servos |
-| 1 | 2×20 2.54 mm female header | Pi |
-| 1 | JST-SH 4-pin (Qwiic) | Spare I2C |
-| 2–3 | LED + 1 kΩ | Power indicators |
-| 4+ | M2.5 / M3 mounting holes | |
+Every part on the board, with the reference name (what KiCad calls it) and what it does. Values in **bold** are what you type into KiCad.
+
+### Section 1: Battery input
+
+| Ref | Part | KiCad symbol | What it does |
+|---|---|---|---|
+| J1 | XT30 male, PCB mount | `Conn_01x02` | Battery plug. Pin 1 = +, pin 2 = −. On the back edge, lead comes up from the battery underneath. |
+| F1 | Mini blade fuse holder + **7.5A** fuse | `Fuse` | Blows if something shorts, so the LiPo doesn't dump 50 A+ into the board. |
+| Q1 | P-MOSFET, −20/−30 V, >10 A, SOIC-8 (e.g. **AO4407A**) | `Q_PMOS_GDS` | Reverse-polarity protection. Battery backwards = MOSFET stays off = nothing gets hurt. Drain toward the battery, source toward the load. |
+| R1 | **10k**, 0805 | `R` | Pulls Q1's gate to GND so it turns on when the battery is the right way round. |
+
+### Section 2: Battery monitor
+
+| Ref | Part | KiCad symbol | What it does |
+|---|---|---|---|
+| U1 | INA219 (SOT-23-8) | search `INA219` | Measures battery voltage and current over I2C, so the Pi knows when the LiPo is low. A0 → 3.3 V, A1 → GND gives address **0x41** (the PCA9685 has 0x40). |
+| R2 | **0.01Ω** shunt, 2512, ≥1 W | `R` | Tiny resistor all the battery current flows through. The INA219 measures the voltage across it to get the current. |
+| C1 | **100nF**, 0805 | `C` | Decoupling for U1. |
+
+### Section 3: Power rails
+
+| Ref | Part | KiCad symbol | What it does |
+|---|---|---|---|
+| U2 | 5 V / 5 A buck module (e.g. Pololu D24V50F5) | custom (header pins) | Servo rail. Steps 7.4 V down to 5 V for the 12 servos. |
+| U3 | 5 V / 2.5 A buck module (e.g. Pololu D24V22F5) | custom (header pins) | Pi rail. Separate from the servos so servo current spikes can't reset the Pi. |
+| C2 | **100µF** 16 V electrolytic | `CP` | Input cap on VBAT next to the bucks. Steadies the battery voltage the modules see. |
+| C3 | **1000µF** 16 V low-ESR electrolytic | `CP` | Servo rail reserve, front (near FL/FR headers). Supplies current bursts faster than the buck can react. |
+| C4 | **1000µF** 16 V low-ESR electrolytic | `CP` | Same, back (near BL/BR headers). |
+| D1 | LED, 0805 | `LED` | Lights when the servo rail is on. |
+| R3 | **1k**, 0805 | `R` | Current limit for D1. |
+| D2 | LED, 0805 | `LED` | Lights when the Pi rail is on. |
+| R4 | **1k**, 0805 | `R` | Current limit for D2. |
+
+### Section 4: Pi, servo driver, servos, extras
+
+| Ref | Part | KiCad symbol | What it does |
+|---|---|---|---|
+| J2 | 2×20 female header, 2.54 mm | `Conn_02x20_Odd_Even` | The Pi Zero 2 W plugs in here. Gives it 5 V and connects I2C (pins 3/5) and GPIO17 (pin 11). |
+| U4 | PCA9685PW (TSSOP-28) | search `PCA9685` | Servo driver. Takes I2C commands from the Pi and makes 16 PWM signals (we use 12). Address **0x40**, sits under the Pi. |
+| C5 | **100nF**, 0805 | `C` | Decoupling for U4, right next to its VDD pin. |
+| C6 | **10µF**, 0805 | `C` | Extra smoothing for U4's 3.3 V supply. |
+| R5 | **10k**, 0805 | `R` | Pulls U4's OE pin high, so all servo outputs stay **off** at boot until the code pulls GPIO17 low. |
+| JP1 | Solder jumper (2 pads) | `SolderJumper_2_Open` | Bridge it to tie OE to GND and skip the GPIO17 feature. |
+| R6–R17 | **220Ω** ×12, 0805 | `R` | One per servo signal. Protects U4 if a servo wire shorts. |
+| R18, R19 | **4.7k** ×2, 0805, **DNP** | `R` | Spare I2C pull-ups. Not fitted: the Pi already has them. Pads are there just in case. |
+| J3–J14 | 1×3 male header, 2.54 mm ×12 | `Conn_01x03` | Servo plugs: signal / 5 V / GND. Three per corner, labelled FL, FR, BL, BR + hip/mid/end. |
+| J15 | JST-SH 4-pin (Qwiic / STEMMA QT) | `Conn_01x04` | Spare I2C port for an IMU later. GND, 3.3 V, SDA, SCL. |
+| TP1–TP5 | Test points | `TestPoint` | Probe spots: VBAT, 5V_SERVO, 5V_PI, 3V3, GND. |
+| H1–H4 | M3 mounting holes | `MountingHole` | Screw the board to the body. Corners, 4 mm in. |
+| H5–H8 | M2.5 mounting holes | `MountingHole` | Pi standoffs, 58 × 23 mm apart. |
+
+### Servo channel map
+
+Matches `SERVO_CHANNELS` in `controller/ik_controller.py`:
+
+| Header | Channel | Leg | Joint |
+|---|---|---|---|
+| J3, J4, J5 | 0, 1, 2 | FR | hip, mid, end |
+| J6, J7, J8 | 3, 4, 5 | BR | hip, mid, end |
+| J9, J10, J11 | 6, 7, 8 | FL | hip, mid, end |
+| J12, J13, J14 | 9, 10, 11 | BL | hip, mid, end |
+
+### Net names
+
+Use these labels in the schematic so everything lines up:
+
+| Net | What |
+|---|---|
+| `VBAT` | Battery after the fuse and MOSFET (6.6–8.4 V) |
+| `VBAT_SENSE` | After the shunt, feeds the bucks |
+| `+5V_SERVO` | Servo rail |
+| `+5V_PI` | Pi rail |
+| `+3V3` | From the Pi's pin 1, for U1, U4, J15 |
+| `SDA`, `SCL` | I2C |
+| `SERVO_OE` | GPIO17 → U4 OE |
+| `GND` | Ground (everything) |
+
+---
+
+## Board size and layout
+
+- **99 × 79 mm** (100 × 80 max, minus 0.5 mm each side for tolerance). Under 100 × 100 is the cheapest tier at JLCPCB / PCBWay.
+- Mounted **on top** of the robot, battery underneath.
+- **Front is along the 99 mm length.**
+
+```
+                    FRONT
+   ┌─────────────── 79 mm ───────────────┐
+   │ ◯ [FL servos ×3]   [FR servos ×3] ◯ │
+   │   (C3)                              │
+   │                    ┌─ camera end ─┐ │
+   │  [U2 SERVO BUCK]   │              │ │
+   │                    │  Pi Zero 2 W │ │
+   │  [U3 PI BUCK]      │   65 × 30    │ │ 99 mm
+   │                    │              │ │
+   │  U1  LEDs          │ U4 + R6–R17  │ │
+   │                    │ underneath   │ │
+   │  Q1  F1            │              │ │
+   │                    └── SD end ────┘ │
+   │   (C4)                 J15          │
+   │ ◯ [BL servos ×3]   [BR servos ×3] ◯ │
+   └──────────── J1 XT30 (battery) ──────┘
+                    BACK
+```
+
+- Power runs up the left side in battery order, away from the Pi and I2C.
+- Pi lengthwise, camera connector forward (for CV later), SD card at the back.
+- Only flat parts under the Pi (it sits ~11 mm up on its header). Bucks and big caps go elsewhere.
 
 ---
 

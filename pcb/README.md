@@ -73,6 +73,17 @@ Pi (I2C wires) → U4 (servo driver) → 12 servo signal pins
 
 **Output:** `VBAT_SENSE`, the same power as VBAT after passing through the shunt.
 
+**What "address 0x41" means.** Every I2C chip shares the same two wires (SDA, SCL). The Pi starts each message with an address, and only the chip with that address answers. `0x` just means hexadecimal: 0x40 = 64, 0x41 = 65. They're ID numbers.
+
+The INA219 has 16 addresses built in (0x40–0x4F). At power-up it checks what its A0 and A1 pins are wired to and picks one:
+
+| A1 | A0 | Address |
+|---|---|---|
+| GND | GND | 0x40 (clashes with the PCA9685) |
+| GND | 3.3 V | **0x41** (what we use) |
+
+If both chips were at 0x40, they'd answer the same messages at once and garble each other. 0x41 is just the smallest change from the default. The PCA9685 has all six of its address pins on GND, which gives 0x40, the address the code expects.
+
 ### Section 3: Power rails
 
 **Job:** turn 7.4 V into 5 V for the servos and, separately, 5 V for the Pi.

@@ -36,7 +36,7 @@ Power flows like this:
 
 ```
 Battery → J1 → F1 → Q1 → R2 (shunt) → U2 → servos
-                                     → U3 → Pi → 3.3 V → U1, U4, J15
+                                     → U3 → Pi → 3.3 V → U1, U4, J3
 ```
 
 Signals flow like this:
@@ -44,7 +44,7 @@ Signals flow like this:
 ```
 Pi (I2C wires) → U4 (servo driver) → 12 servo signal pins
                → U1 (battery meter)
-               → J15 (spare port)
+               → J3 (spare port)
 ```
 
 ### Section 1: Battery input
@@ -55,7 +55,7 @@ Pi (I2C wires) → U4 (servo driver) → 12 servo signal pins
 |---|---|
 | **J1** XT30 connector | Where the battery plugs in. Pin 1 is +, pin 2 is −. |
 | **F1** 7.5 A fuse | If anything shorts, the fuse blows instead of the LiPo dumping 50 A+ into the board and catching fire. Normal walking only draws 2–4 A, so 7.5 A won't blow by accident. |
-| **Q1** AO4407A P-MOSFET | An electronic switch. Battery plugged in the right way, it turns fully on and wastes almost no power. Plugged in backwards, it stays off and nothing gets power. A plain diode would also protect, but would waste about 2.5 W as heat at 5 A. Drain (pin 2) faces the battery, source (pin 3) faces VBAT. |
+| **Q1** AOD4185 P-MOSFET (DPAK) | An electronic switch. Battery plugged in the right way, it turns fully on and wastes almost no power. Plugged in backwards, it stays off and nothing gets power. A plain diode would also protect, but would waste about 2.5 W as heat at 5 A. Drain (pin 2) faces the battery, source (pin 3) faces VBAT. |
 | **R1** 10 kΩ | Holds Q1's gate at ground. Ground being about 7 V below the battery voltage is exactly what turns a P-MOSFET on. |
 | **PWR_FLAGs** | Not real parts. They tell KiCad's checker "power comes in here" so it doesn't flag VBAT and GND as having no power source. |
 
@@ -116,8 +116,8 @@ If both chips were at 0x40, they'd answer the same messages at once and garble e
 | **JP1** solder jumper | Bridge it with solder to permanently enable the outputs and skip the GPIO17 feature. A backup option. |
 | **R6–R17** 220 Ω ×12 | One per servo signal wire. If a servo wire gets crushed and shorts, this resistor limits the current so U4 survives. |
 | **R18, R19** 4.7 kΩ (not fitted) | Spare pads for I2C pull-up resistors. The Pi already has them built in, so these stay empty unless I2C misbehaves. |
-| **J3–J14** 3-pin headers ×12 | Servo plugs: signal / 5 V / GND. Three per corner, matching the code's channels (FR = 0–2, BR = 3–5, FL = 6–8, BL = 9–11). |
-| **J15** Qwiic connector | Spare 4-pin I2C port. Plug in an IMU later for balance and CV, no soldering needed. |
+| **J15–J26** 3-pin headers ×12 | Servo plugs: signal / 5 V / GND. Three per corner, matching the code's channels (FR = 0–2, BR = 3–5, FL = 6–8, BL = 9–11). |
+| **J3** Qwiic connector | Spare 4-pin I2C port. Plug in an IMU later for balance and CV, no soldering needed. |
 | **TP1–TP5** test points | Labelled spots to touch multimeter probes: VBAT, servo 5 V, Pi 5 V, 3.3 V, GND. |
 | **H1–H4** M3 holes | Screw the board to the robot body. |
 | **H5–H8** M2.5 holes | Standoffs to hold the Pi. |
@@ -180,7 +180,7 @@ All grounds are connected (one GND net), but see the layout tips about *where* t
 
 - **Battery:** 2S LiPo, 7.4 V nominal (8.4 V full, ~6.6 V empty), 1500–2200 mAh is a decent start. XT30 connector (rated ~15 A, small).
 - **Fuse:** a blade fuse holder (mini/ATM) with a 7.5 A fuse. If something shorts, the fuse dies instead of the battery catching fire. LiPos can dump 50 A+ into a short. Don't skip this.
-- **Reverse-polarity protection:** a P-channel MOSFET wired as an "ideal diode". If you plug the battery in backwards, the MOSFET stays off and nothing gets hurt. A normal diode would also work but wastes ~2.5 W as heat at 5 A; the MOSFET wastes a few tens of mW. Pick one rated for **−20 V or −30 V, >10 A, low R<sub>DS(on)</sub>** (e.g. AO4407A or similar, SOIC-8). Gate goes to GND through a ~10 kΩ resistor. Google "P-channel MOSFET reverse polarity protection", it's a 2-part circuit.
+- **Reverse-polarity protection:** a P-channel MOSFET wired as an "ideal diode". If you plug the battery in backwards, the MOSFET stays off and nothing gets hurt. A normal diode would also work but wastes ~2.5 W as heat at 5 A; the MOSFET wastes a few tens of mW. Pick one rated for **−20 V or −30 V, >10 A, low R<sub>DS(on)</sub>** (e.g. AOD4185 or similar, TO-252). Gate goes to GND through a ~10 kΩ resistor. Google "P-channel MOSFET reverse polarity protection", it's a 2-part circuit.
 - **Power switch:** easiest is an inline switch rated ≥10 A on the battery lead (off-board), or just unplug the battery.
 
 ### 2. Battery monitor (INA219)
@@ -351,7 +351,7 @@ Every part on the board, with the reference name (what KiCad calls it) and what 
 |---|---|---|---|
 | J1 | XT30 male, PCB mount | `Conn_01x02` | Battery plug. Pin 1 = +, pin 2 = −. On the back edge, lead comes up from the battery underneath. |
 | F1 | Mini blade fuse holder + **7.5A** fuse | `Fuse` | Blows if something shorts, so the LiPo doesn't dump 50 A+ into the board. |
-| Q1 | P-MOSFET, −20/−30 V, >10 A, SOIC-8 (e.g. **AO4407A**) | `Q_PMOS_GDS` | Reverse-polarity protection. Battery backwards = MOSFET stays off = nothing gets hurt. Drain toward the battery, source toward the load. |
+| Q1 | P-MOSFET, −20/−40 V, >10 A, TO-252 (**AOD4185**) | `Q_PMOS_GDS` | Reverse-polarity protection. Battery backwards = MOSFET stays off = nothing gets hurt. Drain toward the battery, source toward the load. |
 | R1 | **10k**, 0805 | `R` | Pulls Q1's gate to GND so it turns on when the battery is the right way round. |
 
 ### Section 2: Battery monitor
@@ -388,8 +388,8 @@ Every part on the board, with the reference name (what KiCad calls it) and what 
 | JP1 | Solder jumper (2 pads) | `SolderJumper_2_Open` | Bridge it to tie OE to GND and skip the GPIO17 feature. |
 | R6–R17 | **220Ω** ×12, 0805 | `R` | One per servo signal. Protects U4 if a servo wire shorts. |
 | R18, R19 | **4.7k** ×2, 0805, **DNP** | `R` | Spare I2C pull-ups. Not fitted: the Pi already has them. Pads are there just in case. |
-| J3–J14 | 1×3 male header, 2.54 mm ×12 | `Conn_01x03` | Servo plugs: signal / 5 V / GND. Three per corner, labelled FL, FR, BL, BR + hip/mid/end. |
-| J15 | JST-SH 4-pin (Qwiic / STEMMA QT) | `Conn_01x04` | Spare I2C port for an IMU later. GND, 3.3 V, SDA, SCL. |
+| J15–J26 | 1×3 male header, 2.54 mm ×12 | `Conn_01x03` | Servo plugs: signal / 5 V / GND. Three per corner, labelled FL, FR, BL, BR + hip/mid/end. |
+| J3 | JST-SH 4-pin (Qwiic / STEMMA QT) | `Conn_01x04` | Spare I2C port for an IMU later. GND, 3.3 V, SDA, SCL. |
 | TP1–TP5 | Test points | `TestPoint` | Probe spots: VBAT, 5V_SERVO, 5V_PI, 3V3, GND. |
 | H1–H4 | M3 mounting holes | `MountingHole` | Screw the board to the body. Corners, 4 mm in. |
 | H5–H8 | M2.5 mounting holes | `MountingHole` | Pi standoffs, 58 × 23 mm apart. |
@@ -400,10 +400,10 @@ Matches `SERVO_CHANNELS` in `controller/ik_controller.py`:
 
 | Header | Channel | Leg | Joint |
 |---|---|---|---|
-| J3, J4, J5 | 0, 1, 2 | FR | hip, mid, end |
-| J6, J7, J8 | 3, 4, 5 | BR | hip, mid, end |
-| J9, J10, J11 | 6, 7, 8 | FL | hip, mid, end |
-| J12, J13, J14 | 9, 10, 11 | BL | hip, mid, end |
+| J15, J16, J17 | 0, 1, 2 | FR | hip, mid, end |
+| J18, J19, J20 | 3, 4, 5 | BR | hip, mid, end |
+| J21, J22, J23 | 6, 7, 8 | FL | hip, mid, end |
+| J24, J25, J26 | 9, 10, 11 | BL | hip, mid, end |
 
 ### Net names
 
@@ -415,10 +415,74 @@ Use these labels in the schematic so everything lines up:
 | `VBAT_SENSE` | After the shunt, feeds the bucks |
 | `+5V_SERVO` | Servo rail |
 | `+5V_PI` | Pi rail |
-| `+3V3` | From the Pi's pin 1, for U1, U4, J15 |
+| `+3V3` | From the Pi's pin 1, for U1, U4, J3 |
 | `SDA`, `SCL` | I2C |
 | `SERVO_OE` | GPIO17 → U4 OE |
 | `GND` | Ground (everything) |
+
+---
+
+## Footprints
+
+### What a footprint is
+
+The schematic says *what connects to what*. A **footprint** says *what the part physically looks like on the board*: the copper pads it gets soldered to, their size and spacing, and its outline. Each schematic symbol gets one footprint. The same 10k resistor symbol could be a tiny 0402 chip or a big through-hole resistor; the footprint is where you choose.
+
+Get it wrong and the real part won't fit the pads. That's the #1 beginner mistake, so check every footprint against the part you'll actually buy.
+
+Assign them in **Tools → Assign Footprints**. Select parts in the middle column (Ctrl-click for several), find the footprint on the right, double-click.
+
+### How to read a footprint name
+
+KiCad names are `Library:Footprint`, and the name packs in the dimensions. Taking them apart:
+
+| Bit | Example | Meaning |
+|---|---|---|
+| Library | `Resistor_SMD:` | Which collection it's in. `_SMD` = surface mount, `_THT` = through-hole. |
+| Size code | `0805` | Imperial size of a chip part: 0.08 × 0.05 inch. Bigger number = bigger part. 0402 is tiny, 0805 is easy to hand-solder, 2512 is big (handles more power). |
+| Metric code | `2012Metric` | The same size in metric: 2.0 × 1.2 mm. |
+| `P` | `P2.54mm` | **Pitch**: distance between pin centres. 2.54 mm (0.1") is the standard header spacing. 0.65 mm is fine-pitch and harder to solder. |
+| `D` | `D10.0mm` | **Diameter** of a round part, like an electrolytic capacitor. |
+| Rows × pins | `1x03`, `2x20` | Pin layout. 1 row of 3, or 2 rows of 20. |
+| `Vertical` / `Horizontal` | | Which way the connector points. Vertical sticks straight up; horizontal (right-angle) points sideways off the board edge. |
+| `PinHeader` / `PinSocket` | | Male pins / female sockets. |
+
+### Package types used here
+
+| Package | What it looks like | Used for |
+|---|---|---|
+| **0805** | Small rectangular chip, two pads | Most resistors, small capacitors, LEDs |
+| **2512** | Big rectangular chip | R2 shunt: all battery current flows through it, so it needs to handle the heat |
+| **CP_Radial** | Cylinder standing up, two legs through holes | Electrolytic capacitors. `CP` = polarized. |
+| **SOT-23-8** | Tiny 8-pin chip | U1 INA219 |
+| **TSSOP-28** | Thin 28-pin chip, 0.65 mm pitch | U4 PCA9685. Fine pitch: best assembled by the factory. |
+| **TO-252 (DPAK)** | 3 pins with a big metal tab | Q1 MOSFET. The tab is a heatsink soldered to the board. |
+| **PinHeader / PinSocket** | Standard 2.54 mm pins | Servo plugs, Pi header, buck module placeholders |
+| **JST-SH** | Tiny 1 mm pitch latching connector | J3 Qwiic port |
+| **SolderJumper** | Two pads close together | JP1. Bridge with solder to connect. |
+| **TestPoint_Pad** | A bare round pad | TP1–TP5, for multimeter probes |
+
+### Footprint for every part
+
+| Parts | Footprint | Why |
+|---|---|---|
+| R1, R3–R19 | `Resistor_SMD:R_0805_2012Metric` | Standard small resistor, easy to hand-solder |
+| C1, C5, C6 | `Capacitor_SMD:C_0805_2012Metric` | Same size, for small capacitors |
+| D1, D2 | `LED_SMD:LED_0805_2012Metric` | Small indicator LEDs |
+| R2 | `Resistor_SMD:R_2512_6332Metric` | Big, carries all the battery current |
+| C2 | `Capacitor_THT:CP_Radial_D6.3mm_P2.50mm` | 100 µF electrolytic, 6.3 mm wide |
+| C3, C4 | `Capacitor_THT:CP_Radial_D10.0mm_P5.00mm` | 1000 µF electrolytic, 10 mm wide |
+| Q1 | `Package_TO_SOT_SMD:TO-252-2` | DPAK MOSFET (AOD4185). Pins 1 = gate, 2 = drain, 3 = source, same as the symbol. |
+| U1 | `Package_TO_SOT_SMD:SOT-23-8` | INA219AxDCN package |
+| U4 | `Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm` | PCA9685PW package |
+| J1 | XT30 **PW** (horizontal) from `Connector_AMASS` | Battery plug, points out the back edge |
+| F1 | Mini blade fuse holder (search `Blade_Mini`) | Takes standard car-style mini fuses |
+| J2 | `Connector_PinSocket_2.54mm:PinSocket_2x20_P2.54mm_Vertical` | Female socket, the Pi plugs in from above |
+| J15–J26 | `Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical` | Male pins, servo plugs push on |
+| J3 | JST-SH `SM04B` Horizontal | Qwiic port |
+| JP1 | `SolderJumper-2` Open | Open by default |
+| TP1–TP5 | `TestPoint:TestPoint_Pad_D1.5mm` | 1.5 mm probe pads |
+| U2, U3 | `PinHeader_1x03_P2.54mm_Vertical` **(placeholder)** | Replaced with exact module footprints once the modules are chosen |
 
 ---
 
@@ -442,7 +506,7 @@ Use these labels in the schematic so everything lines up:
    │                    │ underneath   │ │
    │  Q1  F1            │              │ │
    │                    └── SD end ────┘ │
-   │   (C4)                 J15          │
+   │   (C4)                 J3           │
    │ ◯ [BL servos ×3]   [BR servos ×3] ◯ │
    └──────────── J1 XT30 (battery) ──────┘
                     BACK

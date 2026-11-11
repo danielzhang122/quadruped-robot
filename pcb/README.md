@@ -75,7 +75,7 @@ Pi (I2C wires) → U4 (servo driver) → 12 servo signal pins
 
 **What "address 0x41" means.** Every I2C chip shares the same two wires (SDA, SCL). The Pi starts each message with an address, and only the chip with that address answers. `0x` just means hexadecimal: 0x40 = 64, 0x41 = 65. They're ID numbers.
 
-The INA219 has 16 addresses built in (0x40–0x4F). At power-up it checks what its A0 and A1 pins are wired to and picks one:
+The INA219 has 16 address configurations built in, 0x40 to 0x4F. You choose one with wiring: A0 and A1 can each go to GND, 3.3 V, SDA or SCL, and each combination maps to one address. At power-up the chip checks those two pins and uses the matching address. The wiring doesn't create the address; it picks one of the 16 the chip already has:
 
 | A1 | A0 | Address |
 |---|---|---|

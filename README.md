@@ -16,6 +16,7 @@ More of my projects: [zhangdz.ca](https://zhangdz.ca)
 - [x] Export the URDF and build the MuJoCo model
 - [x] Trot gait controller: stands, walks and turns in the sim
 - [ ] Re-export the URDF and sim model from the v2 design
+- [ ] Design a custom PCB in KiCad (plan in [`pcb/`](pcb/README.md))
 - [ ] 3D-print the parts
 - [ ] Assemble: 12 MG90S servos, PCA9685 board, Raspberry Pi Zero 2 W, power
 - [ ] First power-up: check servo directions (`SERVO_INVERT`) and calibrate
@@ -35,6 +36,7 @@ More of my projects: [zhangdz.ca](https://zhangdz.ca)
 | `description/` | ROS 2 package `quadruped_description`: URDF (`urdf/quadruped.urdf.xacro`) + STL meshes, originally exported by [fusion2urdf-ros2](https://github.com/dheena2k2/fusion2urdf-ros2) | Source of the model |
 | `cad/` | Fusion 360 designs, see below | Open in Fusion 360 |
 | `experimental/` | RL training, URDF-to-MuJoCo conversion scripts, pose tools, Isaac Sim USD files | **Didn't work / untested**, see [its README](experimental/README.md) |
+| `pcb/` | Custom PCB (KiCad): battery, power rails, PCA9685, servo headers, Pi header | Planning, see [its README](pcb/README.md) |
 | `tests/` | Gait unit tests, hardware mapping tests (fake servo board), headless sim tests (stands, walks, turns) | Pass |
 | `media/` | Sim video (`quadruped-sim.mp4`) and the GIF shown above | |
 

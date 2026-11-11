@@ -4,3 +4,10 @@ __pycache__/
 .pytest_cache/
 MUJOCO_LOG.TXT
 *.f3d._xx
+
+# KiCad
+*-backups/
+fp-info-cache
+*.kicad_prl
+_autosave-*
+*.lck

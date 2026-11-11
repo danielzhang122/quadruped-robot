@@ -22,6 +22,99 @@ The controller code doesn't change: the PCA9685 is still at I2C address `0x40`, 
 
 ---
 
+## How it works
+
+### The big picture
+
+The board does three jobs:
+
+1. **Takes battery power safely.** A fuse, protection against plugging the battery in backwards, and a battery meter.
+2. **Turns it into two clean 5 V supplies.** One for the 12 servos, one for the Pi.
+3. **Connects the Pi to the servos.** The Pi sends commands over two I2C wires to a servo driver chip, which makes the 12 control signals.
+
+Power flows like this:
+
+```
+Battery → J1 → F1 → Q1 → R2 (shunt) → U2 → servos
+                                     → U3 → Pi → 3.3 V → U1, U4, J15
+```
+
+Signals flow like this:
+
+```
+Pi (I2C wires) → U4 (servo driver) → 12 servo signal pins
+               → U1 (battery meter)
+               → J15 (spare port)
+```
+
+### Section 1: Battery input
+
+**Job:** get battery power onto the board without fires or fried parts.
+
+| Part | What it does |
+|---|---|
+| **J1** XT30 connector | Where the battery plugs in. Pin 2 is +, pin 1 is −. |
+| **F1** 7.5 A fuse | If anything shorts, the fuse blows instead of the LiPo dumping 50 A+ into the board and catching fire. Normal walking only draws 2–4 A, so 7.5 A won't blow by accident. |
+| **Q1** AO4407A P-MOSFET | An electronic switch. Battery plugged in the right way, it turns fully on and wastes almost no power. Plugged in backwards, it stays off and nothing gets power. A plain diode would also protect, but would waste about 2.5 W as heat at 5 A. Drain (pin 2) faces the battery, source (pin 3) faces VBAT. |
+| **R1** 10 kΩ | Holds Q1's gate at ground. Ground being about 7 V below the battery voltage is exactly what turns a P-MOSFET on. |
+| **PWR_FLAGs** | Not real parts. They tell KiCad's checker "power comes in here" so it doesn't flag VBAT and GND as having no power source. |
+
+**Output:** `VBAT` (6.6–8.4 V), protected battery power.
+
+### Section 2: Battery monitor
+
+**Job:** let the Pi read battery voltage and current, so you never drain the LiPo too far. A LiPo drained below about 6.0 V (for 2 cells) is permanently damaged, and the Pi can't measure voltage on its own.
+
+| Part | What it does |
+|---|---|
+| **R2** 0.01 Ω shunt | A tiny resistor that all the battery current flows through. At 5 A it drops only 0.05 V, which is small enough to ignore but big enough to measure. |
+| **U1** INA219 | Measures the small voltage across R2 to get current, and also measures the battery voltage itself. Sends both to the Pi over I2C. Its address pins are set for **0x41**, because the servo driver already uses 0x40. |
+| **C1** 100 nF | Decoupling capacitor: a small local energy store right at U1's power pin that smooths out tiny electrical noise. Every chip gets one. |
+
+**Output:** `VBAT_SENSE`, the same power as VBAT after passing through the shunt.
+
+### Section 3: Power rails
+
+**Job:** turn 7.4 V into 5 V for the servos and, separately, 5 V for the Pi.
+
+**Why two separate supplies?** When 12 servos move at once they pull big current spikes, and the voltage dips. If the Pi shared that supply, it would reset mid-step.
+
+| Part | What it does |
+|---|---|
+| **U2** 5 V / 5 A buck module | Powers the servos. A "buck" steps voltage down at about 90 % efficiency. A simple linear regulator would turn about 15 W into heat instead. It's a ready-made module, so you don't have to design the tricky circuit yourself. |
+| **U3** 5 V / 2.5 A buck module | Powers the Pi. It's a separate module so servo noise can't reach the Pi. |
+| **C2** 100 µF | Sits on the battery line next to both modules. The battery wire is long and can't deliver sudden current quickly, so this capacitor covers the gap. |
+| **C3** 1000 µF (front) | Reserve for the front servos. When servos suddenly pull current, this capacitor supplies the burst faster than U2 can react. |
+| **C4** 1000 µF (back) | The same for the back servos. |
+| **D1 + R3** LED + 1 kΩ | Lights when the servo supply is on. R3 limits the current so the LED doesn't burn out. |
+| **D2 + R4** LED + 1 kΩ | Lights when the Pi supply is on. |
+
+**Outputs:** `+5V_SERVO` and `+5V_PI`.
+
+### Section 4: Pi, servo driver, servos, extras
+
+**Job:** the brains-to-muscles connection.
+
+| Part | What it does |
+|---|---|
+| **J2** 2×20 header | The Pi plugs in here. Pins 2/4 feed it 5 V from U3. Pin 1 gives back 3.3 V to power the chips. Pins 3/5 are the I2C wires (SDA/SCL). Pin 11 (GPIO17) controls the servo enable. |
+| **U4** PCA9685 | Servo driver chip, the same one on the Adafruit breakout. The Pi sends "servo 4 to 90°" over I2C, and U4 generates the timed pulse that servos understand, on 16 outputs (we use 12). Runs on 3.3 V so its signals match the Pi's. Address 0x40, which is what the code already uses. |
+| **C5** 100 nF | Decoupling for U4. |
+| **C6** 10 µF | Extra smoothing on U4's 3.3 V supply. |
+| **R5** 10 kΩ | Safety pull-up on U4's OE (output enable) pin. At power-on, before the code runs, it keeps all servo outputs off, so the robot doesn't twitch at boot. The code then sets GPIO17 low to turn the outputs on. |
+| **JP1** solder jumper | Bridge it with solder to permanently enable the outputs and skip the GPIO17 feature. A backup option. |
+| **R6–R17** 220 Ω ×12 | One per servo signal wire. If a servo wire gets crushed and shorts, this resistor limits the current so U4 survives. |
+| **R18, R19** 4.7 kΩ (not fitted) | Spare pads for I2C pull-up resistors. The Pi already has them built in, so these stay empty unless I2C misbehaves. |
+| **J3–J14** 3-pin headers ×12 | Servo plugs: signal / 5 V / GND. Three per corner, matching the code's channels (FR = 0–2, BR = 3–5, FL = 6–8, BL = 9–11). |
+| **J15** Qwiic connector | Spare 4-pin I2C port. Plug in an IMU later for balance and CV, no soldering needed. |
+| **TP1–TP5** test points | Labelled spots to touch multimeter probes: VBAT, servo 5 V, Pi 5 V, 3.3 V, GND. |
+| **H1–H4** M3 holes | Screw the board to the robot body. |
+| **H5–H8** M2.5 holes | Standoffs to hold the Pi. |
+
+The [component list](#component-list) further down has the KiCad symbol and exact value for every part, plus the servo channel map and net names.
+
+---
+
 ## Wait, what's a PCB
 
 A printed circuit board is just wires made of copper, glued to a fiberglass sheet. Instead of running jumper wires from pin to pin, you draw where the copper goes, send the files to a factory (JLCPCB, PCBWay, OSH Park...), and a week or two later you get boards back for a few bucks each.
@@ -245,7 +338,7 @@ Every part on the board, with the reference name (what KiCad calls it) and what 
 
 | Ref | Part | KiCad symbol | What it does |
 |---|---|---|---|
-| J1 | XT30 male, PCB mount | `Conn_01x02` | Battery plug. Pin 1 = +, pin 2 = −. On the back edge, lead comes up from the battery underneath. |
+| J1 | XT30 male, PCB mount | `Conn_01x02` | Battery plug. Pin 2 = +, pin 1 = −. On the back edge, lead comes up from the battery underneath. |
 | F1 | Mini blade fuse holder + **7.5A** fuse | `Fuse` | Blows if something shorts, so the LiPo doesn't dump 50 A+ into the board. |
 | Q1 | P-MOSFET, −20/−30 V, >10 A, SOIC-8 (e.g. **AO4407A**) | `Q_PMOS_GDS` | Reverse-polarity protection. Battery backwards = MOSFET stays off = nothing gets hurt. Drain toward the battery, source toward the load. |
 | R1 | **10k**, 0805 | `R` | Pulls Q1's gate to GND so it turns on when the battery is the right way round. |

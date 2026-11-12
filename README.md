@@ -17,7 +17,8 @@ More of my projects: [zhangdz.ca](https://zhangdz.ca)
 - [x] Trot gait controller: stands, walks and turns in the sim
 - [ ] Re-export the URDF and sim model from the v2 design
 - [x] Custom PCB schematic in KiCad: battery input, fuse and reverse-polarity protection, battery monitor, two 5 V rails, PCA9685, Pi header, 12 servo headers (see [`pcb/`](pcb/README.md))
-- [ ] PCB layout (99 × 79 mm), then order the boards
+- [x] PCB layout (99 × 79 mm, 2 layers): fully routed, DRC clean
+- [ ] Order the PCBs (steps in [`pcb/`](pcb/README.md#5-ordering-when-youre-ready))
 - [ ] 3D-print the parts
 - [ ] Assemble: 12 MG90S servos, the custom PCB, Raspberry Pi Zero 2 W, 2S LiPo
 - [ ] First power-up: check servo directions (`SERVO_INVERT`) and calibrate
@@ -37,7 +38,7 @@ More of my projects: [zhangdz.ca](https://zhangdz.ca)
 | `description/` | ROS 2 package `quadruped_description`: URDF (`urdf/quadruped.urdf.xacro`) + STL meshes, originally exported by [fusion2urdf-ros2](https://github.com/dheena2k2/fusion2urdf-ros2) | Source of the model |
 | `cad/` | Fusion 360 designs, see below | Open in Fusion 360 |
 | `experimental/` | RL training, URDF-to-MuJoCo conversion scripts, pose tools, Isaac Sim USD files | **Didn't work / untested**, see [its README](experimental/README.md) |
-| `pcb/` | Custom PCB (KiCad 10, `quadped.kicad_pro`): 2S LiPo input with fuse and reverse-polarity protection, INA219 battery monitor, separate 5 V rails for servos and Pi, PCA9685 servo driver, Pi Zero header, 12 servo headers | Schematic done (ERC clean, footprints assigned). Layout next. See [its README](pcb/README.md) |
+| `pcb/` | Custom PCB (KiCad 10, `quadped.kicad_pro`): 2S LiPo input with fuse and reverse-polarity protection, INA219 battery monitor, separate 5 V rails for servos and Pi, PCA9685 servo driver, Pi Zero header, 12 servo headers | Design complete: schematic and layout done, fully routed. Not ordered yet. See [its README](pcb/README.md) |
 | `tests/` | Gait unit tests, hardware mapping tests (fake servo board), headless sim tests (stands, walks, turns) | Pass |
 | `media/` | Sim video (`quadruped-sim.mp4`) and the GIF shown above | |
 

@@ -2,7 +2,7 @@
 
 A custom board to replace the rats' nest of wires between the battery, the Pi, the PCA9685 breakout and the 12 servos. Designed in KiCad.
 
-**Status:** schematic in progress (KiCad 10). See the [component list](#component-list) for every part.
+**Status:** design complete (KiCad 10). Schematic is ERC clean, the board is fully routed (0 unconnected), DRC clean apart from cosmetic silkscreen warnings. Not ordered yet: see [Ordering](#5-ordering-when-youre-ready). Open `quadped.kicad_pro` in KiCad.
 
 ---
 
@@ -320,12 +320,17 @@ Tools → Assign Footprints. Pick sizes you can live with:
 5. Set the design rules to your factory's capabilities (JLCPCB and PCBWay publish them; a 0.2 mm min trace/space is a safe default), then run **DRC** until it's clean.
 6. View → 3D Viewer to sanity-check. File → Export → STEP, then import into Fusion to make sure it actually fits in the body and the connectors aren't hitting anything.
 
-### 5. Order
+### 5. Ordering (when you're ready)
 
-1. File → Fabrication Outputs → Gerbers + Drill files. Zip them.
-2. Upload to JLCPCB / PCBWay. 2 layers, 1.6 mm, 5 boards is the cheap default.
-3. If you want the SMD parts assembled (recommended for the PCA9685 and INA219), also export the BOM and the position file (CPL) and pick parts from their stock list.
-4. Buy the through-hole stuff (headers, XT30, fuse holder, caps, buck modules) separately.
+Nothing's been ordered yet. When you want boards:
+
+1. **Final checks:** run DRC (only silkscreen warnings and the excluded servo courtyard overlaps should be left), then **Alt+3** for a 3D look.
+2. **Gerbers:** File → Fabrication Outputs → Gerbers (.gbr). Output folder `gerbers/`. Layers: F.Cu, B.Cu, F.Silkscreen, B.Silkscreen, F.Mask, B.Mask, Edge.Cuts (add F.Paste / B.Paste if the factory assembles it). Click **Plot**.
+3. **Drill files:** in the same window, **Generate Drill Files… → Generate**, into the same `gerbers/` folder.
+4. **Zip** the `gerbers` folder and upload it to jlcpcb.com or pcbway.com. Check their preview looks like the board.
+5. **Order settings:** 2 layers, 1.6 mm, 1 oz copper, HASL lead-free, 5 boards. Any colour.
+6. **Assembly (optional, recommended for U1 and U4):** also export the BOM and the position (CPL) file (File → Fabrication Outputs → Component Placement) and let the factory place the small SMD parts. Solder the through-hole parts yourself.
+7. **Buy separately:** XT30 male (PW, horizontal), Keystone 3568 fuse holder + 7.5 A mini blade fuse, 2×20 **female** socket for the Pi, 12× 1×3 male headers, 100 µF and 2× 1000 µF caps, both buck modules.
 
 ### 6. Bring-up (don't skip, don't rush)
 
@@ -516,9 +521,26 @@ KiCad names are `Library:Footprint`, and the name packs in the dimensions. Takin
 - Pi lengthwise, camera connector forward (for CV later), SD card at the back.
 - Only flat parts under the Pi (it sits ~11 mm up on its header). Bucks and big caps go elsewhere.
 
+### How the board was laid out
+
+| Thing | Setting |
+|---|---|
+| Layers | 2 (F.Cu top, B.Cu bottom), 1.6 mm |
+| Design rules | 0.15 mm min clearance and track width (the 0.65 mm pitch chips need it), 0.6 / 0.3 mm vias, 0.13 mm annular ring, 0.5 mm copper to edge |
+| `Power` net class | VBAT, VBAT_SENSE, +5V_SERVO, +5V_PI, GND: 1.5 mm tracks. The unnamed J1 → F1 → Q1 nets were widened by hand. |
+| Ground | GND fill on **both** layers, joined by GND stitching vias. Thermal reliefs, min 1 spoke. |
+| Signals | Routed with Freerouting (KiCad plugin, needs Java 25+), then tidied by hand |
+| Sense lines | U1 IN+ / IN− are thin on purpose: they carry almost no current and have to fit between the chip's pins |
+| DRC exclusions | Servo header courtyard overlaps (they sit side by side at 2.54 mm on purpose) |
+
+Mounting holes: 4× M3 at the corners (4 mm in), 4× M2.5 for the Pi (58 × 23 mm, around J2).
+
 ---
 
 ## Gotchas
+
+- **J2 uses a `PinHeader_2x20` footprint, not `PinSocket`.** KiCad's socket footprints are mirrored for boards that face each other. The Pi sits face-up on top of this board, so the socket footprint would swap the Pi's 5 V and GND/3.3 V pins. Solder a female socket into the header footprint.
+- **XT30: pin 2 is +.** That matches the "+" printed by the AMASS footprint. The plug opening is the end away from the pins, at the board edge.
 
 - **Two chips at 0x40.** INA219 A0 → 3.3 V. Already handled above, but it's the classic mistake.
 - **Don't run LiPos flat.** Watch the INA219 voltage. Stop at ~6.8 V under load.

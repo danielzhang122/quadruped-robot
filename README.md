@@ -18,6 +18,7 @@ More of my projects: [zhangdz.ca](https://zhangdz.ca)
 - [ ] Re-export the URDF and sim model from the v2 design
 - [x] Custom PCB schematic in KiCad: battery input, fuse and reverse-polarity protection, battery monitor, two 5 V rails, PCA9685, Pi header, 12 servo headers (see [`pcb/`](pcb/README.md))
 - [x] PCB layout (99 × 79 mm, 2 layers): fully routed, DRC clean
+- [ ] PCB polish: silkscreen tidy-up and labelling so it actually looks nice (labels off pads and inside the edge, + / − on the battery plug, FL / FR / BL / BR by the servo corners, S + − by the servo headers, board name and version, maybe a logo)
 - [ ] Order the PCBs (steps in [`pcb/`](pcb/README.md#5-ordering-when-youre-ready))
 - [ ] 3D-print the parts
 - [ ] Assemble: 12 MG90S servos, the custom PCB, Raspberry Pi Zero 2 W, 2S LiPo
